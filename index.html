@@ -1,0 +1,1111 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="light">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>待办事项看板</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    /* ==================== CSS Variables ==================== */
+    :root {
+      --color-primary: #3B82F6;
+      --color-primary-hover: #2563EB;
+      --color-tag-backlog: #64748B;
+      --color-tag-progress: #F59E0B;
+      --color-tag-done: #10B981;
+      --color-success: #10B981;
+      --color-danger: #EF4444;
+      --color-danger-hover: #DC2626;
+      --color-warning: #F59E0B;
+      --bg-primary: #F8FAFC;
+      --bg-card: #FFFFFF;
+      --bg-header: #FFFFFF;
+      --text-primary: #1E293B;
+      --text-secondary: #64748B;
+      --text-muted: #94A3B8;
+      --border-color: #E2E8F0;
+      --border-radius: 8px;
+      --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+      --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
+      --font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      --font-size-xs: 0.75rem;
+      --font-size-sm: 0.875rem;
+      --font-size-base: 1rem;
+      --font-size-lg: 1.125rem;
+      --font-size-xl: 1.5rem;
+      --spacing-xs: 0.25rem;
+      --spacing-sm: 0.5rem;
+      --spacing-md: 1rem;
+      --spacing-lg: 1.5rem;
+      --spacing-xl: 2rem;
+    }
+
+    [data-theme="dark"] {
+      --bg-primary: #0F172A;
+      --bg-card: #1E293B;
+      --bg-header: #1E293B;
+      --text-primary: #F1F5F9;
+      --text-secondary: #94A3B8;
+      --border-color: #334155;
+      --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.2);
+      --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.3);
+    }
+
+    /* ==================== Reset & Base ==================== */
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: var(--font-family);
+      font-size: var(--font-size-base);
+      color: var(--text-primary);
+      background-color: var(--bg-primary);
+      min-height: 100vh;
+      transition: background-color 0.2s, color 0.2s;
+    }
+
+    /* ==================== Header ==================== */
+    .header {
+      background-color: var(--bg-header);
+      border-bottom: 1px solid var(--border-color);
+      padding: var(--spacing-md) var(--spacing-xl);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .header__left {
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-md);
+    }
+
+    .header__logo {
+      width: 32px;
+      height: 32px;
+      color: var(--color-primary);
+    }
+
+    .header__title {
+      font-size: var(--font-size-xl);
+      font-weight: 600;
+    }
+
+    .header__right {
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-md);
+    }
+
+    .btn-theme {
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: var(--spacing-sm);
+      border-radius: var(--border-radius);
+      color: var(--text-secondary);
+      transition: color 0.2s, background-color 0.2s;
+    }
+
+    .btn-theme:hover {
+      color: var(--text-primary);
+      background-color: var(--border-color);
+    }
+
+    .btn-theme svg {
+      width: 20px;
+      height: 20px;
+      display: block;
+    }
+
+    /* ==================== Buttons ==================== */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: var(--spacing-sm);
+      padding: var(--spacing-sm) var(--spacing-md);
+      border-radius: var(--border-radius);
+      font-size: var(--font-size-sm);
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.15s;
+      border: none;
+      font-family: inherit;
+    }
+
+    .btn-primary {
+      background-color: var(--color-primary);
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background-color: var(--color-primary-hover);
+    }
+
+    .btn-ghost {
+      background-color: transparent;
+      color: var(--text-secondary);
+    }
+
+    .btn-ghost:hover {
+      background-color: var(--border-color);
+      color: var(--text-primary);
+    }
+
+    .btn-danger {
+      background-color: var(--color-danger);
+      color: white;
+    }
+
+    .btn-danger:hover {
+      background-color: var(--color-danger-hover);
+    }
+
+    .btn-icon {
+      background: none;
+      border: none;
+      padding: var(--spacing-xs);
+      cursor: pointer;
+      color: var(--text-muted);
+      border-radius: var(--spacing-xs);
+      transition: color 0.15s, background-color 0.15s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .btn-icon:hover {
+      color: var(--text-primary);
+      background-color: var(--border-color);
+    }
+
+    .btn-icon svg {
+      width: 16px;
+      height: 16px;
+    }
+
+    /* ==================== Board ==================== */
+    .board {
+      display: flex;
+      gap: var(--spacing-lg);
+      padding: var(--spacing-xl);
+      overflow-x: auto;
+      min-height: calc(100vh - 73px);
+    }
+
+    @media (max-width: 768px) {
+      .board {
+        padding: var(--spacing-md);
+        gap: var(--spacing-md);
+      }
+    }
+
+    /* ==================== List ==================== */
+    .list {
+      flex: 0 0 320px;
+      background-color: var(--bg-card);
+      border-radius: var(--border-radius);
+      display: flex;
+      flex-direction: column;
+      max-height: calc(100vh - 73px - 64px);
+      box-shadow: var(--shadow-sm);
+      border: 1px solid var(--border-color);
+    }
+
+    @media (max-width: 768px) {
+      .list {
+        flex: 0 0 280px;
+      }
+    }
+
+    .list__header {
+      padding: var(--spacing-md);
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-sm);
+    }
+
+    .list__tag {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+    }
+
+    .list__name {
+      font-weight: 600;
+      font-size: var(--font-size-base);
+    }
+
+    .list__count {
+      margin-left: auto;
+      background-color: var(--border-color);
+      color: var(--text-secondary);
+      font-size: var(--font-size-xs);
+      padding: 2px 8px;
+      border-radius: 12px;
+    }
+
+    .list__tasks {
+      flex: 1;
+      padding: var(--spacing-sm);
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: var(--spacing-sm);
+    }
+
+    .list__add-task {
+      padding: var(--spacing-sm) var(--spacing-md);
+      border-top: 1px solid var(--border-color);
+    }
+
+    .list__add-btn {
+      width: 100%;
+      justify-content: flex-start;
+      color: var(--text-muted);
+    }
+
+    .list__add-btn:hover {
+      color: var(--color-primary);
+      background-color: transparent;
+    }
+
+    .list__add-btn svg {
+      width: 16px;
+      height: 16px;
+    }
+
+    /* ==================== Task Card ==================== */
+    .task-card {
+      background-color: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--border-radius);
+      padding: var(--spacing-md);
+      display: flex;
+      align-items: flex-start;
+      gap: var(--spacing-sm);
+      transition: box-shadow 0.15s, border-color 0.15s;
+      animation: fadeIn 0.2s ease-out;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(-4px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .task-card:hover {
+      box-shadow: var(--shadow-md);
+      border-color: var(--color-primary);
+    }
+
+    .task-card.is-editing {
+      border-color: var(--color-primary);
+      box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+    }
+
+    .task-card__checkbox {
+      flex-shrink: 0;
+      width: 20px;
+      height: 20px;
+      border: 2px solid var(--border-color);
+      border-radius: 4px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.15s;
+      margin-top: 2px;
+    }
+
+    .task-card__checkbox:hover {
+      border-color: var(--color-primary);
+    }
+
+    .task-card__checkbox.is-checked {
+      background-color: var(--color-success);
+      border-color: var(--color-success);
+    }
+
+    .task-card__checkbox svg {
+      width: 12px;
+      height: 12px;
+      color: white;
+      opacity: 0;
+      transform: scale(0.5);
+      transition: all 0.15s;
+    }
+
+    .task-card__checkbox.is-checked svg {
+      opacity: 1;
+      transform: scale(1);
+    }
+
+    .task-card__content {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .task-card__title {
+      display: block;
+      word-break: break-word;
+      line-height: 1.5;
+      transition: color 0.15s;
+    }
+
+    .task-card__content.is-completed .task-card__title {
+      text-decoration: line-through;
+      color: var(--text-muted);
+    }
+
+    .task-card__edit-input {
+      width: 100%;
+      font-size: var(--font-size-base);
+      font-family: inherit;
+      color: var(--text-primary);
+      background-color: transparent;
+      border: none;
+      outline: none;
+      line-height: 1.5;
+      padding: 0;
+    }
+
+    .task-card__actions {
+      display: flex;
+      gap: var(--spacing-xs);
+      opacity: 0;
+      transition: opacity 0.15s;
+    }
+
+    .task-card:hover .task-card__actions {
+      opacity: 1;
+    }
+
+    /* ==================== Task Input ==================== */
+    .task-input-wrapper {
+      padding: var(--spacing-md);
+      border-top: 1px solid var(--border-color);
+      display: none;
+      flex-direction: column;
+      gap: var(--spacing-sm);
+    }
+
+    .task-input-wrapper.is-visible {
+      display: flex;
+    }
+
+    .task-input {
+      width: 100%;
+      padding: var(--spacing-sm) var(--spacing-md);
+      border: 1px solid var(--border-color);
+      border-radius: var(--border-radius);
+      font-size: var(--font-size-base);
+      font-family: inherit;
+      color: var(--text-primary);
+      background-color: var(--bg-card);
+      outline: none;
+      transition: border-color 0.15s, box-shadow 0.15s;
+    }
+
+    .task-input:focus {
+      border-color: var(--color-primary);
+      box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+    }
+
+    .task-input::placeholder {
+      color: var(--text-muted);
+    }
+
+    .task-list-select {
+      width: 100%;
+      padding: var(--spacing-sm) var(--spacing-md);
+      border: 1px solid var(--border-color);
+      border-radius: var(--border-radius);
+      font-size: var(--font-size-sm);
+      font-family: inherit;
+      color: var(--text-primary);
+      background-color: var(--bg-card);
+      cursor: pointer;
+      outline: none;
+    }
+
+    .task-list-select:focus {
+      border-color: var(--color-primary);
+    }
+
+    .task-input__actions {
+      display: flex;
+      gap: var(--spacing-sm);
+    }
+
+    .task-input__actions .btn {
+      flex: 1;
+    }
+
+    /* ==================== Modal ==================== */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background-color: rgba(0, 0, 0, 0.5);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      padding: var(--spacing-md);
+      animation: fadeInOverlay 0.15s ease-out;
+    }
+
+    .modal-overlay.is-visible {
+      display: flex;
+    }
+
+    @keyframes fadeInOverlay {
+      from {
+        opacity: 0;
+      }
+
+      to {
+        opacity: 1;
+      }
+    }
+
+    .modal {
+      background-color: var(--bg-card);
+      border-radius: var(--border-radius);
+      padding: var(--spacing-lg);
+      max-width: 400px;
+      width: 100%;
+      box-shadow: var(--shadow-md);
+      animation: slideUp 0.2s ease-out;
+    }
+
+    @keyframes slideUp {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .modal__title {
+      font-size: var(--font-size-lg);
+      font-weight: 600;
+      margin-bottom: var(--spacing-sm);
+    }
+
+    .modal__message {
+      color: var(--text-secondary);
+      margin-bottom: var(--spacing-lg);
+      line-height: 1.5;
+    }
+
+    .modal__actions {
+      display: flex;
+      gap: var(--spacing-sm);
+      justify-content: flex-end;
+    }
+
+    /* ==================== Empty State ==================== */
+    .empty-state {
+      text-align: center;
+      padding: var(--spacing-xl);
+      color: var(--text-muted);
+    }
+
+    .empty-state svg {
+      width: 48px;
+      height: 48px;
+      margin-bottom: var(--spacing-md);
+      opacity: 0.5;
+    }
+
+    .empty-state p {
+      font-size: var(--font-size-sm);
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Header -->
+  <header class="header">
+    <div class="header__left">
+      <svg class="header__logo" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <rect x="3" y="3" width="7" height="9" rx="1" />
+        <rect x="14" y="3" width="7" height="5" rx="1" />
+        <rect x="14" y="12" width="7" height="9" rx="1" />
+        <rect x="3" y="16" width="7" height="5" rx="1" />
+      </svg>
+      <h1 class="header__title">待办事项看板</h1>
+    </div>
+    <div class="header__right">
+      <button class="btn btn-primary" id="btn-add-task-header">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="12" y1="5" x2="12" y2="19" />
+          <line x1="5" y1="12" x2="19" y2="12" />
+        </svg>
+        添加任务
+      </button>
+      <button class="btn-theme" id="btn-theme" title="切换主题">
+        <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="5" />
+          <line x1="12" y1="1" x2="12" y2="3" />
+          <line x1="12" y1="21" x2="12" y2="23" />
+          <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" />
+          <line x1="18.36" y1="18.36" x2="19.78" y2="19.78" />
+          <line x1="1" y1="12" x2="3" y2="12" />
+          <line x1="21" y1="12" x2="23" y2="12" />
+          <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" />
+          <line x1="18.36" y1="5.64" x2="19.78" y2="4.22" />
+        </svg>
+        <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+          style="display:none">
+          <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+        </svg>
+      </button>
+    </div>
+  </header>
+
+  <!-- Board -->
+  <main class="board" id="board">
+    <!-- Lists will be rendered here -->
+  </main>
+
+  <!-- Global Task Input (shown when clicking header button) -->
+  <div class="task-input-wrapper" id="global-task-input"
+    style="position: fixed; bottom: 0; left: 0; right: 0; background: var(--bg-header); border-top: 1px solid var(--border-color); z-index: 50;">
+    <div style="max-width: 1200px; margin: 0 auto;">
+      <div class="task-input__actions"
+        style="padding: var(--spacing-md); display: flex; flex-direction: column; gap: var(--spacing-sm);">
+        <input type="text" class="task-input" id="global-task-title" placeholder="输入任务标题..." maxlength="100" autofocus>
+        <div style="display: flex; gap: var(--spacing-sm);">
+          <select class="task-list-select" id="global-task-list" style="flex: 1;">
+            <option value="list-backlog">待办</option>
+            <option value="list-progress">进行中</option>
+            <option value="list-done">已完成</option>
+          </select>
+          <button class="btn btn-primary btn-add" id="global-btn-add">添加</button>
+          <button class="btn btn-ghost btn-cancel" id="global-btn-cancel">取消</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Delete Confirm Modal -->
+  <div class="modal-overlay" id="delete-modal">
+    <div class="modal">
+      <h3 class="modal__title">确认删除</h3>
+      <p class="modal__message">确定要删除这个任务吗？此操作无法撤销。</p>
+      <div class="modal__actions">
+        <button class="btn btn-ghost" id="modal-btn-cancel">取消</button>
+        <button class="btn btn-danger" id="modal-btn-confirm">删除</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ==================== Icons ====================
+    const Icons = {
+      check: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>`,
+      edit: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>`,
+      trash: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>`,
+      plus: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>`,
+      clipboard: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1" ry="1"/></svg>`
+    };
+
+    // ==================== Store ====================
+    const Store = {
+      STORAGE_KEY: 'todo-board-data',
+
+      state: null,
+
+      defaultData: {
+        lists: [
+          { id: 'list-backlog', name: '待办', nameEn: 'backlog', taskIds: [], color: 'var(--color-tag-backlog)' },
+          { id: 'list-progress', name: '进行中', nameEn: 'in-progress', taskIds: [], color: 'var(--color-tag-progress)' },
+          { id: 'list-done', name: '已完成', nameEn: 'done', taskIds: [], color: 'var(--color-tag-done)' }
+        ],
+        tasks: {}
+      },
+
+      init() {
+        const saved = localStorage.getItem(this.STORAGE_KEY);
+        if (saved) {
+          try {
+            this.state = JSON.parse(saved);
+            // Ensure theme attribute matches state
+            document.documentElement.setAttribute('data-theme', this.state.theme || 'light');
+          } catch (e) {
+            this.state = JSON.parse(JSON.stringify(this.defaultData));
+          }
+        } else {
+          this.state = JSON.parse(JSON.stringify(this.defaultData));
+        }
+        return this.state;
+      },
+
+      save() {
+        localStorage.setItem(this.STORAGE_KEY, JSON.stringify(this.state));
+      },
+
+      getState() {
+        return this.state;
+      },
+
+      generateId(prefix) {
+        return `${prefix}-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+      },
+
+      addTask(title, listId) {
+        const task = {
+          id: this.generateId('task'),
+          title: title.trim(),
+          completed: false,
+          listId,
+          createdAt: Date.now(),
+          updatedAt: Date.now()
+        };
+        this.state.tasks[task.id] = task;
+        const list = this.state.lists.find(l => l.id === listId);
+        if (list) {
+          list.taskIds.push(task.id);
+        }
+        this.save();
+        return task;
+      },
+
+      deleteTask(taskId) {
+        const task = this.state.tasks[taskId];
+        if (!task) return;
+        const list = this.state.lists.find(l => l.id === task.listId);
+        if (list) {
+          list.taskIds = list.taskIds.filter(id => id !== taskId);
+        }
+        delete this.state.tasks[taskId];
+        this.save();
+      },
+
+      updateTask(taskId, updates) {
+        const task = this.state.tasks[taskId];
+        if (!task) return;
+        Object.assign(task, updates, { updatedAt: Date.now() });
+        this.save();
+        return task;
+      },
+
+      moveTask(taskId, toListId) {
+        const task = this.state.tasks[taskId];
+        if (!task) return;
+        const fromList = this.state.lists.find(l => l.id === task.listId);
+        const toList = this.state.lists.find(l => l.id === toListId);
+        if (!fromList || !toList) return;
+        fromList.taskIds = fromList.taskIds.filter(id => id !== taskId);
+        toList.taskIds.push(taskId);
+        task.listId = toListId;
+        task.updatedAt = Date.now();
+        this.save();
+      },
+
+      toggleTheme() {
+        const newTheme = this.state.theme === 'light' ? 'dark' : 'light';
+        this.state.theme = newTheme;
+        document.documentElement.setAttribute('data-theme', newTheme);
+        this.save();
+        return newTheme;
+      }
+    };
+
+    // ==================== Kanban Renderer ====================
+    const Kanban = {
+      boardEl: document.getElementById('board'),
+
+      render() {
+        const state = Store.getState();
+        this.boardEl.innerHTML = state.lists.map(list => this.renderList(list)).join('');
+
+        // Show empty state message for lists with no tasks
+        state.lists.forEach(list => {
+          const tasksEl = document.querySelector(`[data-list-id="${list.id}"] .list__tasks`);
+          if (tasksEl && list.taskIds.length === 0) {
+            tasksEl.innerHTML = `
+              <div class="empty-state">
+                ${Icons.clipboard}
+                <p>暂无任务</p>
+              </div>
+            `;
+          }
+        });
+      },
+
+      renderList(list) {
+        const state = Store.getState();
+        const tasks = list.taskIds.map(id => state.tasks[id]).filter(Boolean);
+
+        return `
+          <section class="list" data-list-id="${list.id}">
+            <header class="list__header">
+              <span class="list__tag" style="background-color: ${list.color}"></span>
+              <span class="list__name">${list.name}</span>
+              <span class="list__count">${tasks.length}</span>
+            </header>
+            <div class="list__tasks">
+              ${tasks.map(task => this.renderTaskCard(task)).join('')}
+            </div>
+            <footer class="list__add-task">
+              <button class="btn btn-ghost list__add-btn" data-action="add-to-list" data-list-id="${list.id}">
+                ${Icons.plus}
+                添加任务
+              </button>
+            </footer>
+          </section>
+        `;
+      },
+
+      renderTaskCard(task) {
+        return `
+          <article class="task-card ${task.completed ? 'is-completed' : ''}" data-task-id="${task.id}">
+            <div class="task-card__checkbox ${task.completed ? 'is-checked' : ''}" data-action="toggle-complete" data-task-id="${task.id}">
+              ${Icons.check}
+            </div>
+            <div class="task-card__content ${task.completed ? 'is-completed' : ''}" data-task-content="${task.id}">
+              <span class="task-card__title">${this.escapeHtml(task.title)}</span>
+            </div>
+            <div class="task-card__actions">
+              <button class="btn-icon btn-edit" data-action="edit-task" data-task-id="${task.id}" title="编辑">
+                ${Icons.edit}
+              </button>
+              <button class="btn-icon btn-delete" data-action="delete-task" data-task-id="${task.id}" title="删除">
+                ${Icons.trash}
+              </button>
+            </div>
+          </article>
+        `;
+      },
+
+      escapeHtml(text) {
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+      },
+
+      bindEvents() {
+        // Board event delegation
+        this.boardEl.addEventListener('click', (e) => {
+          const action = e.target.closest('[data-action]');
+          if (!action) return;
+
+          const actionType = action.dataset.action;
+          const taskId = action.dataset.taskId;
+          const listId = action.dataset.listId;
+
+          switch (actionType) {
+            case 'add-to-list':
+              App.showAddInput(listId);
+              break;
+            case 'toggle-complete':
+              App.handleToggleComplete(taskId);
+              break;
+            case 'edit-task':
+              App.handleEditStart(taskId);
+              break;
+            case 'delete-task':
+              App.handleDeleteClick(taskId);
+              break;
+          }
+        });
+
+        // Task input in list
+        this.boardEl.addEventListener('keydown', (e) => {
+          if (e.target.classList.contains('task-input') && e.key === 'Enter') {
+            const listId = e.target.dataset.listId;
+            App.handleTaskSubmit(e.target.value, listId);
+          }
+          if (e.target.classList.contains('task-input') && e.key === 'Escape') {
+            App.hideAllInputs();
+          }
+        });
+
+        this.boardEl.addEventListener('click', (e) => {
+          if (e.target.classList.contains('btn-add-inline')) {
+            const input = e.target.closest('.task-input-wrapper').querySelector('.task-input');
+            const listId = input.dataset.listId;
+            App.handleTaskSubmit(input.value, listId);
+          }
+          if (e.target.classList.contains('btn-cancel-inline')) {
+            App.hideAllInputs();
+          }
+        });
+      },
+
+      updateTaskContent(taskId, title) {
+        const contentEl = document.querySelector(`[data-task-content="${taskId}"]`);
+        if (contentEl) {
+          contentEl.innerHTML = `<span class="task-card__title">${this.escapeHtml(title)}</span>`;
+        }
+      }
+    };
+
+    // ==================== App ====================
+    const App = {
+      pendingDeleteId: null,
+      editingTaskId: null,
+
+      init() {
+        Store.init();
+        Kanban.render();
+        Kanban.bindEvents();
+        this.bindGlobalEvents();
+        this.updateThemeIcon();
+      },
+
+      bindGlobalEvents() {
+        // Header add task button
+        document.getElementById('btn-add-task-header').addEventListener('click', () => {
+          this.toggleGlobalInput();
+        });
+
+        // Theme toggle
+        document.getElementById('btn-theme').addEventListener('click', () => {
+          this.handleThemeToggle();
+        });
+
+        // Global task input
+        document.getElementById('global-btn-add').addEventListener('click', () => {
+          this.handleGlobalTaskSubmit();
+        });
+
+        document.getElementById('global-btn-cancel').addEventListener('click', () => {
+          this.hideGlobalInput();
+        });
+
+        document.getElementById('global-task-title').addEventListener('keydown', (e) => {
+          if (e.key === 'Enter') {
+            this.handleGlobalTaskSubmit();
+          }
+          if (e.key === 'Escape') {
+            this.hideGlobalInput();
+          }
+        });
+
+        // Delete modal
+        document.getElementById('modal-btn-cancel').addEventListener('click', () => {
+          this.hideDeleteModal();
+        });
+
+        document.getElementById('modal-btn-confirm').addEventListener('click', () => {
+          this.handleDeleteConfirm();
+        });
+
+        document.getElementById('delete-modal').addEventListener('click', (e) => {
+          if (e.target.id === 'delete-modal') {
+            this.hideDeleteModal();
+          }
+        });
+      },
+
+      handleGlobalTaskSubmit() {
+        const titleInput = document.getElementById('global-task-title');
+        const listSelect = document.getElementById('global-task-list');
+        const title = titleInput.value.trim();
+
+        if (!title) return;
+
+        Store.addTask(title, listSelect.value);
+        Kanban.render();
+        this.hideGlobalInput();
+      },
+
+      showAddInput(listId) {
+        this.hideAllInputs();
+
+        const listEl = document.querySelector(`[data-list-id="${listId}"]`);
+        const tasksEl = listEl.querySelector('.list__tasks');
+
+        // Remove empty state if present
+        const emptyState = tasksEl.querySelector('.empty-state');
+        if (emptyState) {
+          emptyState.remove();
+        }
+
+        const inputHtml = `
+          <div class="task-input-wrapper is-visible" style="border-top: 1px solid var(--border-color); padding: var(--spacing-sm);">
+            <input type="text" class="task-input" data-list-id="${listId}" placeholder="输入任务标题..." maxlength="100" autofocus>
+            <div style="display: flex; gap: var(--spacing-sm); margin-top: var(--spacing-sm);">
+              <button class="btn btn-primary btn-add-inline" style="flex:1">添加</button>
+              <button class="btn btn-ghost btn-cancel-inline">取消</button>
+            </div>
+          </div>
+        `;
+        tasksEl.insertAdjacentHTML('beforeend', inputHtml);
+        tasksEl.querySelector('.task-input').focus();
+      },
+
+      hideAllInputs() {
+        document.querySelectorAll('.task-input-wrapper').forEach(el => el.remove());
+      },
+
+      toggleGlobalInput() {
+        const inputWrapper = document.getElementById('global-task-input');
+        if (inputWrapper.classList.contains('is-visible')) {
+          this.hideGlobalInput();
+        } else {
+          inputWrapper.classList.add('is-visible');
+          document.getElementById('global-task-title').focus();
+        }
+      },
+
+      hideGlobalInput() {
+        const inputWrapper = document.getElementById('global-task-input');
+        inputWrapper.classList.remove('is-visible');
+        document.getElementById('global-task-title').value = '';
+      },
+
+      handleTaskSubmit(title, listId) {
+        const trimmedTitle = title.trim();
+        if (!trimmedTitle) return;
+
+        Store.addTask(trimmedTitle, listId);
+        Kanban.render();
+      },
+
+      handleToggleComplete(taskId) {
+        const task = Store.getState().tasks[taskId];
+        if (!task) return;
+
+        Store.updateTask(taskId, { completed: !task.completed });
+        Kanban.render();
+      },
+
+      handleEditStart(taskId) {
+        if (this.editingTaskId) {
+          this.handleEditCancel();
+        }
+
+        this.editingTaskId = taskId;
+        const task = Store.getState().tasks[taskId];
+        const contentEl = document.querySelector(`[data-task-content="${taskId}"]`);
+        const cardEl = document.querySelector(`[data-task-id="${taskId}"]`);
+
+        if (!contentEl || !task) return;
+
+        cardEl.classList.add('is-editing');
+        contentEl.innerHTML = `
+          <input type="text" class="task-card__edit-input" value="${this.escapeHtml(task.title)}" maxlength="100" autofocus>
+        `;
+
+        const input = contentEl.querySelector('input');
+        input.focus();
+        input.select();
+
+        // Handle edit submission
+        const handleSubmit = (e) => {
+          if (e.key === 'Enter') {
+            const newTitle = input.value.trim();
+            if (newTitle && newTitle !== task.title) {
+              Store.updateTask(taskId, { title: newTitle });
+            }
+            Kanban.render();
+            this.editingTaskId = null;
+          }
+          if (e.key === 'Escape') {
+            this.handleEditCancel();
+          }
+        };
+
+        input.addEventListener('keydown', handleSubmit);
+        input.addEventListener('blur', () => {
+          // Delay to allow click events on buttons
+          setTimeout(() => {
+            if (this.editingTaskId === taskId) {
+              const newTitle = input.value.trim();
+              if (newTitle && newTitle !== task.title) {
+                Store.updateTask(taskId, { title: newTitle });
+              }
+              Kanban.render();
+              this.editingTaskId = null;
+            }
+          }, 100);
+        });
+      },
+
+      handleEditCancel() {
+        if (!this.editingTaskId) return;
+        Kanban.render();
+        this.editingTaskId = null;
+      },
+
+      handleDeleteClick(taskId) {
+        this.pendingDeleteId = taskId;
+        document.getElementById('delete-modal').classList.add('is-visible');
+      },
+
+      hideDeleteModal() {
+        document.getElementById('delete-modal').classList.remove('is-visible');
+        this.pendingDeleteId = null;
+      },
+
+      handleDeleteConfirm() {
+        if (this.pendingDeleteId) {
+          Store.deleteTask(this.pendingDeleteId);
+          Kanban.render();
+        }
+        this.hideDeleteModal();
+      },
+
+      handleThemeToggle() {
+        Store.toggleTheme();
+        this.updateThemeIcon();
+      },
+
+      updateThemeIcon() {
+        const state = Store.getState();
+        const sunIcon = document.querySelector('.icon-sun');
+        const moonIcon = document.querySelector('.icon-moon');
+
+        if (state.theme === 'dark') {
+          sunIcon.style.display = 'none';
+          moonIcon.style.display = 'block';
+        } else {
+          sunIcon.style.display = 'block';
+          moonIcon.style.display = 'none';
+        }
+      },
+
+      escapeHtml(text) {
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+      }
+    };
+
+    // ==================== Initialize ====================
+    document.addEventListener('DOMContentLoaded', () => {
+      App.init();
+    });
+  </script>
+</body>
+
+</html>
